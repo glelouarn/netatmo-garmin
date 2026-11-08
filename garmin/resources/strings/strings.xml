@@ -1,0 +1,5 @@
+<strings>
+    <string id="AppName">Météo Netatmo</string>
+    <string id="ClientIdTitle">Netatmo client_id</string>
+    <string id="ClientSecretTitle">Netatmo client_secret</string>
+</strings>

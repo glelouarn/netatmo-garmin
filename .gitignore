@@ -1,0 +1,22 @@
+# --- Secrets : ne jamais publier ---
+garmin/resources/settings/properties.xml
+*.der
+*.pem
+.env
+netatmo_config.json
+netatmo_tokens.json
+netatmo_output/
+
+# --- Fichiers générés ---
+garmin/bin/
+*.prg
+*.iq
+__pycache__/
+*.pyc
+
+# --- macOS / éditeurs ---
+.DS_Store
+.vscode/
+
+# --- Images de référence (captures d'apps tierces, logo source) ---
+docs/src/
