@@ -5,6 +5,7 @@ import Toybox.Lang;
 import Toybox.Math;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
+import Toybox.Timer;
 import Toybox.WatchUi;
 
 // Quatre écrans « Tendance 24 h » (navigation : voir Pages.mc) :
@@ -26,6 +27,12 @@ class NetatmoStore {
     var _cur as Dictionary or Null;
     var _in as Array or Null;
     var _start as Number = 0;
+    // 3 images en mémoire graphique, réutilisées (jamais libérées : une image
+    // créée juste après une libération peut perdre son contenu) ; _slotPage : écran
+    // qu'elles contiennent pour les données _bmpFor (-1 : aucun)
+    var _slots as Array = [null, null, null];
+    var _slotPage as Array = [-1, -1, -1];
+    var _bmpFor as Dictionary or Null;
 
     function initialize() {
         _data = Application.Storage.getValue("history") as Dictionary or Null;
@@ -216,6 +223,7 @@ class PageView extends WatchUi.View {
     var _page as Number;
     var _store as NetatmoStore;
     var _line as Line or Null;
+    var _timer as Timer.Timer or Null;
 
     function initialize(page as Number, store as NetatmoStore) {
         View.initialize();
@@ -225,6 +233,105 @@ class PageView extends WatchUi.View {
 
     function onShow() as Void {
         _store.ensureLoaded();
+    }
+
+    function onHide() as Void {
+        if (_timer != null) {
+            (_timer as Timer.Timer).stop();
+            _timer = null;
+        }
+    }
+
+    // ------------------------------------------------------------ cache
+    // Dessiner un écran (≈ 1 500 rectangles, courbe, textes) prend du temps : la montre
+    // doit l'avoir fini avant de lancer le glissement. On le dessine donc une seule fois
+    // dans une image, puis on se contente de la recopier. Les écrans voisins sont
+    // préparés juste après l'affichage, pour que le glissement suivant parte aussitôt.
+
+    function bitmap(page as Number, W as Number, H as Number, create as Boolean)
+            as Graphics.BufferedBitmap or Null {
+        var d = _store._data;
+        if (d == null) {
+            return null;
+        }
+        var st = _store;
+        if (st._bmpFor != d) {
+            st._slotPage = [-1, -1, -1];
+            st._bmpFor = d;
+        }
+        var free = -1;
+        for (var i = 0; i < 3; i++) {
+            var sp = st._slotPage[i] as Number;
+            if (sp == page) {
+                var b = st._slots[i] == null ? null
+                    : (st._slots[i] as Graphics.BufferedBitmapReference).get();
+                if (b != null) {
+                    return b as Graphics.BufferedBitmap;
+                }
+                st._slotPage[i] = -1;       // image libérée par le système
+                sp = -1;
+            }
+            // emplacement réutilisable : vide, ou écran ni affiché ni voisin
+            if (free < 0 && (sp < 0 || (sp != _page && sp != (_page + 1) % PAGES
+                                        && sp != (_page + PAGES - 1) % PAGES))) {
+                free = i;
+            }
+        }
+        if (!create || free < 0 || !(Graphics has :createBufferedBitmap)) {
+            return null;
+        }
+        try {
+            var b = st._slots[free] == null ? null
+                : (st._slots[free] as Graphics.BufferedBitmapReference).get();
+            if (b == null) {
+                var r = Graphics.createBufferedBitmap({:width => W, :height => H});
+                st._slots[free] = r;
+                b = r.get();
+                if (b == null) {
+                    return null;
+                }
+            }
+            var bdc = (b as Graphics.BufferedBitmap).getDc();
+            bdc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
+            bdc.clear();
+            if (bdc has :setAntiAlias) {
+                bdc.setAntiAlias(true);
+            }
+            drawPage(bdc, W, H, page);
+            st._slotPage[free] = page;
+            return b as Graphics.BufferedBitmap;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // Prépare un écran voisin pas encore dessiné (un par appel, pour rester sous
+    // le temps alloué), puis se reprogramme.
+    function prepareNext() as Void {
+        _timer = null;
+        if (_store._data == null) {
+            return;
+        }
+        var nb = [(_page + 1) % PAGES, (_page + PAGES - 1) % PAGES];
+        for (var i = 0; i < nb.size(); i++) {
+            var p = nb[i] as Number;
+            if (bitmap(p, _w, _h, false) == null) {
+                if (bitmap(p, _w, _h, true) != null) {
+                    schedule();
+                }
+                return;
+            }
+        }
+    }
+
+    var _w as Number = 0;
+    var _h as Number = 0;
+
+    function schedule() as Void {
+        if (_timer == null) {
+            _timer = new Timer.Timer();
+            (_timer as Timer.Timer).start(method(:prepareNext), 60, false);
+        }
     }
 
     // ------------------------------------------------------------ affichage
@@ -248,20 +355,36 @@ class PageView extends WatchUi.View {
                 Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
             return;
         }
+        _w = W;
+        _h = H;
+        var bmp = bitmap(_page, W, H, true);
+        if (bmp != null) {
+            dc.drawBitmap(0, 0, bmp);
+            schedule();
+        } else {
+            drawPage(dc, W, H, _page);
+        }
+        drawDots(dc, W, H);
+        drawStatus(dc, W, H, d);
+    }
+
+    // En-tête et graphique d'un écran (partie mise en cache).
+    function drawPage(dc as Graphics.Dc, W as Number, H as Number, page as Number) as Void {
+        var d = _store._data as Dictionary;
         var hist = d["hist"] as Dictionary;
 
         // barres (ou null) puis courbe de chaque écran
         var bars = null as Bars or Null;
         var line;
-        var indoor = _page <= 1;
-        if (_page == 0) {
+        var indoor = page <= 1;
+        if (page == 0) {
             bars = new Bars("Humidité", "Hum.", hist["ih"] as Array, Draw.HUMI, Draw.HUMI_LO, 0.0, 100.0);
             line = new Line("Temp.", hist["it"] as Array, Draw.TEMP, 2.0, "°");
-        } else if (_page == 1) {
+        } else if (page == 1) {
             bars = new Bars("Bruit", "Bruit", hist["n"] as Array, Draw.LOGO, Draw.LOGO, 30.0, 80.0);
             bars.noise = true;
             line = new Line("CO2", hist["co2"] as Array, Draw.NEUTRAL, 200.0, "ppm");
-        } else if (_page == 2) {
+        } else if (page == 2) {
             bars = new Bars("Humidité", "Hum.", hist["oh"] as Array, Draw.HUMI, Draw.HUMI_LO, 0.0, 100.0);
             line = new Line("Temp.", hist["ot"] as Array, Draw.TEMP, 2.0, "°");
         } else {
@@ -331,19 +454,26 @@ class PageView extends WatchUi.View {
             dc.setPenWidth(1);
             drawHours(dc, cx0, cy1, cx1 - cx0, n, d["start"] as Number, d["step"] as Number);
         }
+    }
 
+    function drawDots(dc as Graphics.Dc, W as Number, H as Number) as Void {
         // ---- Indicateur de page : 4 petits points discrets à gauche, sur un arc
         // parallèle au bord de l'écran (comme l'app Météo native)
-        var R = (W < H ? W : H) / 2 - (W * 4 / 100 + 3);
-        var stepA = 20.0 / R;                    // ~20 px entre deux points
+        // Points sur un arc plus courbé que le bord (rayon 55 %), tangent à un cercle
+        // proche du bord au milieu : l'arrondi se voit malgré le faible écart des points.
+        var R = (W < H ? W : H) / 2 - (W * 3 / 100 + 3);
+        var Rc = R * 55 / 100;
+        var stepA = 26.0 / Rc;                   // ~26 px entre deux points
         for (var p = 0; p < PAGES; p++) {
             var a = Math.PI + (p - (PAGES - 1) / 2.0) * stepA;   // haut -> bas
-            var px = W / 2 + (R * Math.cos(a)).toNumber();
-            var py = H / 2 - (R * Math.sin(a)).toNumber();
+            var px = W / 2 - R + Rc + (Rc * Math.cos(a)).toNumber();
+            var py = H / 2 - (Rc * Math.sin(a)).toNumber();
             dc.setColor(p == _page ? Graphics.COLOR_WHITE : 0x555555, Graphics.COLOR_TRANSPARENT);
             dc.fillCircle(px, py, p == _page ? 3 : 2);
         }
+    }
 
+    function drawStatus(dc as Graphics.Dc, W as Number, H as Number, d as Dictionary) as Void {
         // ---- État (chargement / erreur)
         var st = _store._status;
         if (st == null && _store._loading) {

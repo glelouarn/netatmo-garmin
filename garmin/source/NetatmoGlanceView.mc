@@ -139,9 +139,8 @@ class NetatmoGlanceView extends WatchUi.GlanceView {
         if (sym == :drop) {
             Draw.drop(dc, cx, symY, symS, color);
         } else {
-            // haut-parleur dans la couleur du dégradé au niveau actuel
-            Draw.noise(dc, cx, symY, symS,
-                f == null ? Draw.DIM : Draw.noiseColor(NOISE_MIN + f * (NOISE_MAX - NOISE_MIN)));
+            // haut-parleur dans le vert du bas de la jauge
+            Draw.noise(dc, cx, symY, symS, f == null ? Draw.DIM : Draw.noiseColor(NOISE_MIN));
         }
     }
 

@@ -58,7 +58,7 @@ Le projet contient deux briques :
 
 - **À gauche, la maison** : symbole maison, température intérieure, jauge d'humidité
   (goutte bleue dessous) et jauge du niveau sonore (haut-parleur dessous). La jauge du bruit
-  et son symbole suivent l'échelle colorée vert → jaune → orange → rouge (30 à 80 dB).
+  suit l'échelle colorée vert → jaune → orange → rouge (30 à 80 dB) ; le haut-parleur reste vert.
 - **À droite, l'extérieur** : symbole soleil et nuage, température extérieure avec chevron de
   tendance, minimum ↓ et maximum ↑ du jour dessous, jauge d'humidité (goutte bleue).
 
@@ -69,7 +69,7 @@ Les valeurs passent en gris si la dernière mesure date de plus de 2 h.
 Sur le modèle de l'écran *Tendance* de la météo Garmin : en haut, le symbole (maison ou
 extérieur) et la légende sur une ligne ; barres par heure en dégradé, courbe par demi-heure
 graduée à droite (extrêmes et milieu), repères horaires en bas (début + 1 h, milieu, fin − 1 h).
-Les 4 écrans glissent de l'un à l'autre ; 4 petits points, à gauche le long du bord, indiquent
+Les 4 écrans glissent de l'un à l'autre ; 4 petits points, à gauche en arc le long du bord, indiquent
 l'écran affiché.
 
 | Écran | Symbole | Courbe | Barres |
@@ -253,6 +253,11 @@ une erreur 5xx ou réseau est réessayée une fois.
 - **Indicateur de page** : la boucle de vues native (`ViewLoop`) impose un grand arc ; l'app
   enchaîne donc ses vues avec `switchToView` (`SLIDE_UP` / `SLIDE_DOWN`) et dessine ses propres
   points.
+- **Fluidité du glissement** : la montre doit avoir dessiné le nouvel écran avant de lancer
+  l'animation. Chaque écran est donc dessiné une seule fois dans une image en mémoire graphique
+  (`Graphics.createBufferedBitmap`), puis simplement recopié ; les écrans voisins sont préparés
+  juste après l'affichage. 3 images sont réutilisées (affiché + voisins) plutôt que libérées et
+  recréées, ce qui pouvait en effacer le contenu.
 
 ### Structure de l'app Connect IQ
 
