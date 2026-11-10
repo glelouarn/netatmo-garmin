@@ -59,8 +59,9 @@ Le projet contient deux briques :
 - **À gauche, la maison** : symbole maison, température intérieure, jauge d'humidité
   (goutte bleue dessous) et jauge du niveau sonore (haut-parleur dessous). La jauge du bruit
   suit l'échelle colorée vert → jaune → orange → rouge (30 à 80 dB) ; le haut-parleur reste vert.
-- **À droite, l'extérieur** : symbole soleil et nuage, température extérieure avec chevron de
-  tendance, minimum ↓ et maximum ↑ du jour dessous, jauge d'humidité (goutte bleue).
+- **À droite, l'extérieur** : symbole soleil et nuage et température extérieure avec chevron de
+  tendance sur une ligne, minimum ↓ et maximum ↑ du jour dessous (sur toute la largeur, sous le
+  symbole), jauge d'humidité (goutte bleue).
 
 Les valeurs passent en gris si la dernière mesure date de plus de 2 h.
 
@@ -256,7 +257,8 @@ une erreur 5xx ou réseau est réessayée une fois.
 - **Fluidité du glissement** : la montre doit avoir dessiné le nouvel écran avant de lancer
   l'animation. Chaque écran est donc dessiné une seule fois dans une image en mémoire graphique
   (`Graphics.createBufferedBitmap`), puis simplement recopié ; les écrans voisins sont préparés
-  juste après l'affichage. 3 images sont réutilisées (affiché + voisins) plutôt que libérées et
+  juste après l'affichage. Au retour après une notification, qui peut réutiliser cette mémoire,
+  l'écran est redessiné entièrement. 3 images sont réutilisées (affiché + voisins) plutôt que libérées et
   recréées, ce qui pouvait en effacer le contenu.
 
 ### Structure de l'app Connect IQ

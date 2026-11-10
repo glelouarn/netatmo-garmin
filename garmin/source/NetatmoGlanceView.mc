@@ -6,7 +6,7 @@ import Toybox.WatchUi;
 
 // Aperçu : la maison calée à gauche, l'extérieur calé à droite.
 //   [maison] 20.7° [hum.|goutte] [bruit|son]        [soleil/nuage] v9.8° [hum.|goutte]
-//                                                                  ↓7.8 ↑20.5
+//                                                  ↓7.8  ↑20.5   (sous le symbole)
 (:glance)
 class NetatmoGlanceView extends WatchUi.GlanceView {
 
@@ -67,17 +67,20 @@ class NetatmoGlanceView extends WatchUi.GlanceView {
         while (true) {
             big = Draw.font(bs);
             dec = Draw.font(bs * 50 / 100);
-            mm = Draw.font(bs * 40 / 100);
+            mm = Draw.font(bs * 50 / 100);
             digitH = capHeight(big, bs);
-            mmH = capHeight(mm, bs * 40 / 100);
+            mmH = capHeight(mm, bs * 50 / 100);
             chevW = digitH * 28 / 100;
             outTopW = chevW + g / 2 + tempWidth(dc, outT, big, dec, digitH);
+            // min/max sur toute la largeur, sous le symbole et la température
             var mmW = minMaxWidth(dc, minTxt, maxTxt, mm, mmH);
-            outW = outTopW > mmW ? outTopW : mmW;
+            outW = symS + g + outTopW;
+            if (mmW > outW) { outW = mmW; }
             inW = tempWidth(dc, inT, big, dec, digitH);
             leftW = symS + g + inW + g + colW + g / 2 + colW;
-            rightW = symS + g + outW + g + colW;
-            var stackH = digitH + mmH * 18 / 10 + mmH;
+            rightW = outW + g + colW;
+            var top = digitH > symS ? digitH : symS;
+            var stackH = top + mmH * 8 / 10 + mmH;
             if ((leftW + rightW + minGap <= W - 2 && stackH <= H * 94 / 100) || bs <= H * 24 / 100) {
                 break;
             }
@@ -101,14 +104,16 @@ class NetatmoGlanceView extends WatchUi.GlanceView {
                   frac(inn["n"], NOISE_MIN, NOISE_MAX), Draw.LOGO, :noise);
 
         // ---- Extérieur (à droite)
+        // ligne du haut : symbole + température ; dessous : min et max
         x = W - rightW;
-        Draw.outdoor(dc, x + symS / 2, cy, symS, fg);
-        x += symS + g;
         var mmGap = mmH * 8 / 10;
-        var stack = digitH + mmGap + mmH;
-        var rowY = cy - stack / 2 + digitH / 2;
-        var mmY = rowY + digitH / 2 + mmGap + mmH / 2;
-        var bx = x + (outW - outTopW) / 2;
+        var topH = digitH > symS ? digitH : symS;
+        var stack = topH + mmGap + mmH;
+        var rowY = cy - stack / 2 + topH / 2;
+        var mmY = cy - stack / 2 + topH + mmGap + mmH / 2;
+        var tx = x + (outW - (symS + g + outTopW)) / 2;
+        Draw.outdoor(dc, tx + symS / 2, rowY, symS, fg);
+        var bx = tx + symS + g;
         Draw.trend(dc, bx + chevW / 2, rowY + digitH / 8, chevW, out["tr"] as String or Null, Draw.DIM);
         drawTemp(dc, bx + chevW + g / 2, rowY, outT, big, dec, digitH, fg);
         var aw = mmH * 80 / 100;

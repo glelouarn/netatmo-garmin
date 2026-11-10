@@ -231,11 +231,21 @@ class PageView extends WatchUi.View {
         _store = store;
     }
 
+    var _hidden as Boolean = false;
+
     function onShow() as Void {
         _store.ensureLoaded();
+        if (_hidden) {
+            // retour après une notification (ou un autre écran système) : il a pu
+            // réutiliser la mémoire graphique et effacer nos images -> on redessine
+            _hidden = false;
+            _store._slotPage = [-1, -1, -1];
+            WatchUi.requestUpdate();
+        }
     }
 
     function onHide() as Void {
+        _hidden = true;
         if (_timer != null) {
             (_timer as Timer.Timer).stop();
             _timer = null;
