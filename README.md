@@ -1,206 +1,208 @@
-<p align="center"><img src="docs/store/logo-1024.png" width="140" alt="Logo Trends for Netatmo"></p>
+<p align="center"><img src="docs/store/logo-1024.png" width="140" alt="Trends for Netatmo logo"></p>
 
 <h1 align="center">Trends for Netatmo</h1>
 
-<p align="center"><a href="https://apps.garmin.com/apps/9cda70a7-ebe9-4638-a621-8eb39ff1e7c3"><b>▶ Installer depuis le Connect IQ Store</b></a></p>
+<p align="center"><a href="https://apps.garmin.com/apps/9cda70a7-ebe9-4638-a621-8eb39ff1e7c3"><b>▶ Get it on the Connect IQ Store</b></a></p>
 
-Les mesures d'une station météo **Netatmo** sur une montre Garmin : un aperçu lisible en une
-seconde dans la liste des glances, et quatre écrans « Tendance 24 h ».
-La montre interroge directement l'API officielle Netatmo : **aucun serveur** à installer.
-App en **anglais et en français** (selon la langue de la montre), compatible avec **57 montres**.
+<p align="center"><b>English</b> · <a href="README.fr.md">Français</a></p>
 
-| Aperçu (glance) | 1 · Intérieur | 2 · Extérieur | 3 · CO2 et bruit | 4 · Pression |
+Your **Netatmo** weather station on a Garmin watch: a glance you can read in one second, and
+four "24-hour trend" screens.
+The watch calls the official Netatmo API directly: **no server** to run.
+The app is in **English and French** (following the watch language) and supports **57 watches**.
+
+| Glance | 1 · Indoor | 2 · Outdoor | 3 · CO2 and noise | 4 · Pressure |
 |:---:|:---:|:---:|:---:|:---:|
-| <img src="docs/apercu.png" width="170" alt="Aperçu : intérieur à gauche, extérieur à droite"> | <img src="docs/ecran-1-interieur.png" width="170" alt="Température et humidité intérieures sur 24 h"> | <img src="docs/ecran-2-exterieur.png" width="170" alt="Température et humidité extérieures sur 24 h"> | <img src="docs/ecran-3-co2-bruit.png" width="170" alt="CO2 et bruit sur 24 h"> | <img src="docs/ecran-4-pression.png" width="170" alt="Pression atmosphérique sur 24 h"> |
-| Maison à gauche, extérieur à droite | Température et humidité | Température et humidité | CO2 et bruit coloré | Pression |
+| <img src="docs/apercu.png" width="170" alt="Glance: indoor on the left, outdoor on the right"> | <img src="docs/ecran-1-interieur.png" width="170" alt="Indoor temperature and humidity over 24 h"> | <img src="docs/ecran-2-exterieur.png" width="170" alt="Outdoor temperature and humidity over 24 h"> | <img src="docs/ecran-3-co2-bruit.png" width="170" alt="CO2 and noise over 24 h"> | <img src="docs/ecran-4-pression.png" width="170" alt="Atmospheric pressure over 24 h"> |
+| Home on the left, outdoor on the right | Temperature and humidity | Temperature and humidity | CO2 and colour-coded noise | Pressure |
 
-*Captures du simulateur Connect IQ, fēnix 8 47 mm, avec de vraies données.*
+*Connect IQ simulator screenshots, fēnix 8 47 mm, with real data.*
 
-Le projet contient deux briques :
+The project has two parts:
 
-| Fichier / dossier | Rôle |
+| File / folder | Purpose |
 |---|---|
-| [`netatmo_explore.py`](netatmo_explore.py) | Script (Mac/Linux) : connexion à Netatmo et affichage de tout ce que renvoie l'API. Sert à vérifier l'accès et de référence pour l'API. |
-| [`garmin/`](garmin/) | App **Connect IQ** (Monkey C) pour la montre. |
-| [`docs/store/`](docs/store/) | Fiche du Connect IQ Store, politique de confidentialité, logo, captures. |
+| [`netatmo_explore.py`](netatmo_explore.py) | Script (Mac/Linux): signs in to Netatmo and prints everything the API returns. Useful to check access and as an API reference. |
+| [`garmin/`](garmin/) | **Connect IQ** app (Monkey C) for the watch. |
+| [`docs/store/`](docs/store/) | Connect IQ Store listing, privacy policy, logo, screenshots. |
 
 ---
 
-## Sommaire
+## Contents
 
-1. [Fonctionnement](#fonctionnement)
-2. [Secrets et sécurité](#secrets-et-sécurité)
-3. [Créer l'app Netatmo](#1-créer-lapp-netatmo)
-4. [Script Python](#2-script-python-facultatif)
-5. [Compiler et installer l'app montre](#3-compiler-et-installer-lapp-montre)
-6. [Publier sur le Connect IQ Store](#4-publier-sur-le-connect-iq-store)
-7. [Dépannage](#dépannage)
-8. [Détails techniques](#détails-techniques)
+1. [How it works](#how-it-works)
+2. [Secrets and security](#secrets-and-security)
+3. [Create the Netatmo app](#1-create-the-netatmo-app)
+4. [Python script](#2-python-script-optional)
+5. [Build and install the watch app](#3-build-and-install-the-watch-app)
+6. [Publish on the Connect IQ Store](#4-publish-on-the-connect-iq-store)
+7. [Troubleshooting](#troubleshooting)
+8. [Technical details](#technical-details)
 
 ---
 
-## Fonctionnement
+## How it works
 
 ### Architecture
 
 ```
- Montre Garmin ──Bluetooth──▶ Garmin Connect ──HTTPS──▶ api.netatmo.com
- (app Connect IQ)              (téléphone)              (API officielle Netatmo Weather)
+ Garmin watch ──Bluetooth──▶ Garmin Connect ──HTTPS──▶ api.netatmo.com
+ (Connect IQ app)             (phone)                  (official Netatmo Weather API)
 ```
 
-- La montre n'accède pas directement à Internet : ses requêtes passent par l'app
-  **Garmin Connect** du téléphone, qui doit être à portée Bluetooth.
-- **Pas de serveur intermédiaire** : l'API Netatmo est documentée et maintenue, la montre
-  l'appelle directement.
-- **Connexion** : l'app embarque le `client_id` / `client_secret` de l'app Netatmo du projet.
-  Au premier lancement, elle ouvre la page de consentement Netatmo sur le téléphone
-  (notification Garmin Connect) : chaque utilisateur y connecte **son** compte et obtient ses
-  propres jetons. La montre les renouvelle seule ; Netatmo change le *refresh token* à chaque
-  renouvellement, l'app enregistre toujours le dernier reçu.
-- **Aperçu** : mis à jour en tâche de fond toutes les 10 min (rythme d'envoi des stations),
-  même widget fermé.
-- **Écrans** : l'historique des 24 dernières heures (une mesure toutes les 30 min) est chargé
-  **une seule fois à l'ouverture**, et pas du tout s'il a moins de 10 min. Changer d'écran ne
-  fait que redessiner.
-- **Mode démo** : réglage de l'app dans Garmin Connect ; affiche des données d'exemple, sans
-  compte Netatmo (utile pour l'essayer, et pour la validation du Store).
+- The watch has no direct Internet access: its requests go through the **Garmin Connect**
+  app on the phone, which must be within Bluetooth range.
+- **No intermediate server**: the Netatmo API is documented and maintained, and the watch
+  calls it directly.
+- **Sign-in**: the app embeds the `client_id` / `client_secret` of the project's Netatmo app.
+  On first launch it opens the Netatmo consent page on the phone (Garmin Connect
+  notification): each user signs in with **their own** account and gets their own tokens.
+  The watch renews them on its own; Netatmo issues a new *refresh token* on every renewal,
+  and the app always stores the latest one.
+- **Glance**: refreshed in the background every 10 min (the stations' upload rate), even when
+  the widget is closed.
+- **Screens**: the last 24 hours of history (one measurement every 30 min) are loaded
+  **once, when the app opens**, and not at all if they are less than 10 min old. Switching
+  screens only redraws.
+- **Demo mode**: an app setting in Garmin Connect; shows sample data without a Netatmo account
+  (handy to try the app, and for Store review).
 
-### Aperçu (glance)
+### Glance
 
-- **À gauche, la maison** : symbole maison, température intérieure, jauge d'humidité
-  (goutte bleue dessous) et jauge du niveau sonore (haut-parleur dessous). La jauge du bruit
-  suit l'échelle colorée vert → jaune → orange → rouge (30 à 80 dB) ; le haut-parleur reste vert.
-- **À droite, l'extérieur** : symbole soleil et nuage et température extérieure avec chevron de
-  tendance sur une ligne, minimum ↓ et maximum ↑ du jour dessous (sur toute la largeur, sous le
-  symbole), jauge d'humidité (goutte bleue).
+- **Left, home**: house symbol, indoor temperature, humidity gauge (blue drop below) and noise
+  gauge (speaker below). The noise gauge follows a green → yellow → orange → red scale
+  (30 to 80 dB); the speaker stays green.
+- **Right, outdoor**: sun-and-cloud symbol and outdoor temperature with a trend chevron on one
+  line, today's minimum ↓ and maximum ↑ below (full width, under the symbol), humidity gauge
+  (blue drop).
 
-Les valeurs passent en gris si la dernière mesure date de plus de 2 h.
+Values turn grey when the latest measurement is more than 2 h old.
 
-### Écrans « Tendance 24 h »
+### "24-hour trend" screens
 
-Sur le modèle de l'écran *Tendance* de la météo Garmin : en haut, le symbole (maison ou
-extérieur) et la légende sur une ligne ; barres par heure en dégradé, courbe par demi-heure
-graduée à droite (extrêmes et milieu), repères horaires en bas (début + 1 h, milieu, fin − 1 h).
-Les 4 écrans glissent de l'un à l'autre ; 4 petits points, à gauche en arc le long du bord,
-indiquent l'écran affiché. L'**ambre** du logo (`#F0A014`) colore les courbes de température
-et de pression : c'est la couleur de l'app.
+Modelled on the *Trend* screen of the Garmin weather app: the symbol (home or outdoor) and the
+legend on one line at the top; hourly bars with a gradient, a half-hourly curve with a scale on
+the right (extremes and middle), time marks at the bottom (start + 1 h, middle, end − 1 h).
+The 4 screens slide into one another; 4 small dots on the left, in an arc along the edge, show
+the current screen. The logo's **amber** (`#F0A014`) colours the temperature and pressure
+curves: it is the app's signature colour.
 
-| Écran | Symbole | Courbe | Barres |
+| Screen | Symbol | Curve | Bars |
 |---|---|---|---|
-| 1 | maison | température intérieure (ambre) | humidité intérieure (0–100 %) |
-| 2 | soleil et nuage | température extérieure (ambre) | humidité extérieure (0–100 %) |
-| 3 | maison | CO2 en ppm (gris) | bruit, de vert (calme) à rouge (80 dB) |
-| 4 | soleil et nuage | pression en hPa (ambre) | — |
+| 1 | home | indoor temperature (amber) | indoor humidity (0–100 %) |
+| 2 | sun and cloud | outdoor temperature (amber) | outdoor humidity (0–100 %) |
+| 3 | home | CO2 in ppm (grey) | noise, from green (quiet) to red (80 dB) |
+| 4 | sun and cloud | pressure in hPa (amber) | — |
 
-| Geste | Action |
+| Gesture | Action |
 |---|---|
-| DOWN / balayage vers le haut | écran suivant |
-| UP / balayage vers le bas | écran précédent |
-| START / toucher | écran suivant |
-| UP maintenu (menu) | actualiser |
-| BACK | quitter |
+| DOWN / swipe up | next screen |
+| UP / swipe down | previous screen |
+| START / tap | next screen |
+| hold UP (menu) | refresh |
+| BACK | exit |
 
-Après l'écran 4, on revient à l'écran 1.
+After screen 4, it wraps back to screen 1.
 
-### Montres compatibles
+### Compatible watches
 
-Les 57 modèles Connect IQ 5+ à écran couleur **avec polices vectorielles** (nécessaires à la
-mise en page de l'aperçu) — liste exacte dans [`garmin/manifest.xml`](garmin/manifest.xml) :
+The 57 Connect IQ 5+ colour models **with vector fonts** (needed for the glance layout); the
+exact list is in [`garmin/manifest.xml`](garmin/manifest.xml):
 
-- **fēnix** 7 / 7S / 7X (et Pro, Solar), 8 (AMOLED, Pro, Solar), 9 (toutes versions), fēnix E,
-  **epix** (Gen 2) et epix Pro, **Enduro** 3 et 4, **tactix** 7 / 8, **quatix** 7 / 8 ;
-- **Forerunner** 165, 170, 265, 570, 955, 965, 970, Forerunner 70 ;
-- **Venu** 3 / 3S, Venu 4, Venu X1, **vívoactive** 6 ;
-- **MARQ** (Gen 2) et (Gen 3), **D2** Mach 1 / Mach 2, **Descent** Mk3, **Approach** S70 / S72.
+- **fēnix** 7 / 7S / 7X (and Pro, Solar), 8 (AMOLED, Pro, Solar), 9 (all versions), fēnix E,
+  **epix** (Gen 2) and epix Pro, **Enduro** 3 and 4, **tactix** 7 / 8, **quatix** 7 / 8;
+- **Forerunner** 165, 170, 265, 570, 955, 965, 970, Forerunner 70;
+- **Venu** 3 / 3S, Venu 4, Venu X1, **vívoactive** 6;
+- **MARQ** (Gen 2) and (Gen 3), **D2** Mach 1 / Mach 2, **Descent** Mk3, **Approach** S70 / S72.
 
-Non prises en charge : montres sans polices vectorielles (Venu 2, Venu Sq 2, Forerunner 255,
-vívoactive 5…), écrans monochromes (Instinct), modèles Connect IQ 3/4.
+Not supported: watches without vector fonts (Venu 2, Venu Sq 2, Forerunner 255,
+vívoactive 5…), monochrome screens (Instinct), Connect IQ 3/4 models.
 
 ---
 
-## Secrets et sécurité
+## Secrets and security
 
-Aucun secret n'est versionné : les fichiers concernés sont listés dans [`.gitignore`](.gitignore).
+No secret is committed: the files involved are listed in [`.gitignore`](.gitignore).
 
-| Secret | Où il vit | Versionné ? |
+| Secret | Where it lives | Committed? |
 |---|---|---|
-| `client_id` / `client_secret` Netatmo (script) | `netatmo_config.json` (droits 600) | Non |
-| `client_id` / `client_secret` Netatmo (app) | `garmin/source-secrets/Secrets.mc` (compilé dans l'app) | Non |
-| Jetons du script | `netatmo_tokens.json` (droits 600) | Non |
-| Jetons de la montre | stockage privé de l'app sur la montre | — |
-| Clé de signature Connect IQ | `garmin/developer_key.der` | Non |
-| Binaires de l'app | `garmin/bin/` (`.prg`, `.iq`) | Non |
-| Réponses brutes de l'API | `netatmo_output/` | Non |
+| Netatmo `client_id` / `client_secret` (script) | `netatmo_config.json` (mode 600) | No |
+| Netatmo `client_id` / `client_secret` (app) | `garmin/source-secrets/Secrets.mc` (compiled into the app) | No |
+| Script tokens | `netatmo_tokens.json` (mode 600) | No |
+| Watch tokens | the app's private storage on the watch | — |
+| Connect IQ signing key | `garmin/developer_key.der` | No |
+| App binaries | `garmin/bin/` (`.prg`, `.iq`) | No |
+| Raw API responses | `netatmo_output/` | No |
 
-- Le `client_id` / `client_secret` identifient **l'app**, pas un utilisateur : chaque
-  utilisateur donne son accord sur les pages Netatmo et n'accède qu'à ses propres données.
-  Le secret est compilé dans le binaire ; s'il était détourné, le régénérer sur
-  dev.netatmo.com et publier une mise à jour.
-- Le script et la montre ont chacun leur propre connexion Netatmo : utiliser l'un ne
-  déconnecte pas l'autre.
-- **Sauvegarder `garmin/developer_key.der`** hors du dépôt : sans cette clé, impossible de
-  publier une mise à jour de l'app sur le Store (ni de remplacer l'app installée).
-
----
-
-## 1. Créer l'app Netatmo
-
-Sur https://dev.netatmo.com/apps → **Create** :
-
-- nom et description de l'app ;
-- **Redirect URI** : `http://localhost:8765/callback` (le même pour le script et la montre ;
-  Garmin Connect intercepte cette adresse, rien n'a besoin d'y répondre).
-
-Noter le `client_id` et le `client_secret`.
+- The `client_id` / `client_secret` identify **the app**, not a user: each user grants
+  consent on Netatmo's pages and only ever accesses their own data. The secret is compiled
+  into the binary; if it were ever misused, regenerate it on dev.netatmo.com and publish an
+  update.
+- The script and the watch each have their own Netatmo session: using one does not sign the
+  other out.
+- **Back up `garmin/developer_key.der`** outside the repository: without this key you cannot
+  publish an update of the app on the Store (nor replace the installed app).
 
 ---
 
-## 2. Script Python (facultatif)
+## 1. Create the Netatmo app
 
-Python 3.8+, sans dépendance.
+On https://dev.netatmo.com/apps → **Create**:
+
+- app name and description;
+- **Redirect URI**: `http://localhost:8765/callback` (the same for the script and the watch;
+  Garmin Connect intercepts this address, nothing needs to answer on it).
+
+Write down the `client_id` and the `client_secret`.
+
+---
+
+## 2. Python script (optional)
+
+Python 3.8+, no dependencies.
 
 ```bash
 python3 netatmo_explore.py
 ```
 
-Au premier lancement, le script demande le `client_id` et le `client_secret` (enregistrés
-dans `netatmo_config.json`), ouvre la connexion Netatmo dans le navigateur, puis affiche un
-résumé des mesures et l'historique 24 h de la température extérieure. Les réponses brutes sont
-dans `netatmo_output/`.
+On first launch, the script asks for the `client_id` and `client_secret` (saved in
+`netatmo_config.json`), opens the Netatmo sign-in page in the browser, then prints a summary of
+the measurements and the 24-hour outdoor temperature history. Raw responses are saved in
+`netatmo_output/`.
 
-| Option | Effet |
+| Option | Effect |
 |---|---|
-| `--login` | forcer une nouvelle connexion |
-| `--raw` | afficher aussi le JSON brut |
+| `--login` | force a new sign-in |
+| `--raw` | also print the raw JSON |
 
 ---
 
-## 3. Compiler et installer l'app montre
+## 3. Build and install the watch app
 
-### a. Prérequis (une fois)
+### a. Prerequisites (once)
 
-1. **Java** : JDK *Temurin 17* ou plus récent (https://adoptium.net).
-2. **SDK Connect IQ** : *SDK Manager* (https://developer.garmin.com/connect-iq/sdk/),
-   dernière version en **current SDK**, et les modèles de montre voulus.
+1. **Java**: JDK *Temurin 17* or later (https://adoptium.net).
+2. **Connect IQ SDK**: *SDK Manager* (https://developer.garmin.com/connect-iq/sdk/), latest
+   version set as **current SDK**, plus the watch models you need.
 
-### b. Renseigner le client_id et le client_secret
+### b. Provide the client_id and client_secret
 
-`build.sh` crée `garmin/source-secrets/Secrets.mc` au premier lancement :
+`build.sh` creates `garmin/source-secrets/Secrets.mc` on first run:
 
-- depuis `netatmo_config.json` si le script a déjà été utilisé ;
-- sinon depuis [`Secrets.example.mc`](garmin/Secrets.example.mc), à compléter.
+- from `netatmo_config.json` if the script has already been used;
+- otherwise from [`Secrets.example.mc`](garmin/Secrets.example.mc), to be filled in.
 
-### c. Compiler
+### c. Build
 
 ```bash
 cd garmin
 ./build.sh fenix847mm          # → bin/TrendsForNetatmo.prg
-./build.sh sim fenix847mm      # compile et lance le simulateur
+./build.sh sim fenix847mm      # build and launch the simulator
 ```
 
-Au premier lancement, `build.sh` génère aussi la clé de signature `developer_key.der`.
+On first run, `build.sh` also generates the signing key `developer_key.der`.
 
-Version finale pour une montre précise (dans `garmin/bin/montres/`) :
+Release build for a given watch (in `garmin/bin/montres/`):
 
 ```bash
 cd garmin
@@ -209,24 +211,26 @@ SDK="$(cat ~/Library/Application\ Support/Garmin/ConnectIQ/current-sdk.cfg)"
   -o bin/montres/TrendsForNetatmo-fenix847mm.prg -r -w
 ```
 
-L'icône de l'app est fournie à la taille exacte de chaque montre (`resources-icon40` … `70`,
-associés aux modèles dans `monkey.jungle`).
+The app icon is provided at the exact size of each watch (`resources-icon40` … `70`, mapped to
+the models in `monkey.jungle`).
 
-### d. Installer sur la montre (hors Store)
+### d. Install on the watch (outside the Store)
 
-1. Quitter **Garmin Express**, brancher la montre en USB. Sur macOS, utiliser **OpenMTP**
+1. Quit **Garmin Express** and plug the watch in over USB. On macOS, use **OpenMTP**
    (https://openmtp.ganeshrvel.com).
-2. Copier le `.prg` du modèle dans `GARMIN/APPS`.
-3. Débrancher : l'app apparaît dans les aperçus (sinon *Réglages › Apparence › Aperçus ›
-   Ajouter*).
-4. Ouvrir l'app (téléphone à proximité, Garmin Connect ouvert) : toucher la notification
-   Garmin Connect et se connecter à Netatmo. À faire une fois par montre.
+2. Copy the model's `.prg` into `GARMIN/APPS`.
+3. Unplug: the app shows up in the glances (otherwise *Settings › Appearance › Glances ›
+   Add*).
+4. Open the app (phone nearby, Garmin Connect open): tap the Garmin Connect notification and
+   sign in to Netatmo. Needed once per watch.
+
+App settings (Demo mode) only show up in Garmin Connect for apps installed from the Store.
 
 ---
 
-## 4. Publier sur le Connect IQ Store
+## 4. Publish on the Connect IQ Store
 
-1. Générer le paquet multi-montres :
+1. Build the multi-device package:
 
    ```bash
    cd garmin
@@ -235,101 +239,99 @@ associés aux modèles dans `monkey.jungle`).
      -o bin/store/TrendsForNetatmo.iq -r -w
    ```
 
-2. Première publication sur https://apps.garmin.com/developer : **Upload an app**, déposer
-   `bin/store/TrendsForNetatmo.iq`, puis remplir la fiche avec les textes de
-   [`docs/store/fiche-store.md`](docs/store/fiche-store.md) (anglais et français, notes pour
-   les testeurs), le logo [`docs/store/icone-store.png`](docs/store/icone-store.png) et les
-   captures [`docs/store/captures/`](docs/store/captures/).
-3. Politique de confidentialité : [`docs/store/PRIVACY.md`](docs/store/PRIVACY.md).
-4. Mise à jour : sur la [page Store de l'app](https://apps.garmin.com/apps/9cda70a7-ebe9-4638-a621-8eb39ff1e7c3), **Upload New Version** ; même clé de
-   signature, numéro de version augmenté, nouveau `.iq`.
+2. First release on https://apps.garmin.com/developer: **Upload an app**, attach
+   `bin/store/TrendsForNetatmo.iq`, then fill in the listing with the texts from
+   [`docs/store/fiche-store.md`](docs/store/fiche-store.md) (English and French, reviewer
+   notes), the logo [`docs/store/icone-store.png`](docs/store/icone-store.png), the hero images
+   and the screenshots in [`docs/store/captures/`](docs/store/captures/).
+3. Privacy policy: [`docs/store/PRIVACY.md`](docs/store/PRIVACY.md).
+4. Updates: on the [app's Store page](https://apps.garmin.com/apps/9cda70a7-ebe9-4638-a621-8eb39ff1e7c3),
+   **Upload New Version**; same signing key, higher version number, new `.iq`.
 
 ---
 
-## Dépannage
+## Troubleshooting
 
-| Message sur la montre | Cause probable |
+| Message on the watch | Likely cause |
 |---|---|
-| *Ouvrir pour se connecter* (aperçu) | pas encore connecté : ouvrir l'app |
-| *Connexion Netatmo : ouvre la notification…* | la page de connexion attend sur le téléphone |
-| *Connexion refusée* | connexion annulée, ou Redirect URI différent de `http://localhost:8765/callback` |
-| *App non configurée* | `Secrets.mc` absent ou incomplet : recompiler |
-| *Téléphone non connecté* | Bluetooth coupé ou Garmin Connect fermé |
-| *Délai dépassé* | réseau lent ; réessayer (UP maintenu) |
-| *Netatmo indisponible* | erreur passagère du serveur Netatmo (déjà réessayée une fois) |
-| *… · HH:MM* en gris | l'actualisation a échoué : les courbes affichées datent de HH:MM |
+| *Open to sign in* (glance) | not signed in yet: open the app |
+| *Netatmo sign-in: open the notification…* | the sign-in page is waiting on the phone |
+| *Sign-in refused* | sign-in cancelled, or Redirect URI other than `http://localhost:8765/callback` |
+| *App not configured* | `Secrets.mc` missing or incomplete: rebuild |
+| *Phone not connected* | Bluetooth off or Garmin Connect closed |
+| *Timed out* | slow network; try again (hold UP) |
+| *Netatmo unavailable* | temporary Netatmo server error (already retried once) |
+| *… · HH:MM* in grey | the refresh failed: the curves shown date from HH:MM |
 
-Dans le simulateur, les réglages et données de l'app restent d'une compilation à l'autre :
-*File › Reset All App Data* pour repartir de zéro. Le mode démo se règle dans
-*File › Edit Application Properties*.
+In the simulator, app settings and data persist across builds: *File › Reset All App Data*
+starts from scratch. Demo mode is set in *File › Edit Application Properties*.
 
 ---
 
-## Détails techniques
+## Technical details
 
-### API Netatmo utilisée
+### Netatmo API used
 
-| Étape | Requête |
+| Step | Request |
 |---|---|
-| Connexion | `https://api.netatmo.com/oauth2/authorize` (scope `read_station`), puis `POST /oauth2/token` (`authorization_code`, puis `refresh_token`) |
-| Dernières mesures | `GET /api/getstationsdata` → `body.devices[0]` (module intérieur) et `modules[]` de type `NAModule1` (extérieur) |
-| Historique intérieur | `GET /api/getmeasure` `scale=30min`, `type=temperature,humidity,co2,noise,pressure`, `optimize=true` |
-| Historique extérieur | `GET /api/getmeasure` avec `module_id`, `type=temperature,humidity` |
+| Sign-in | `https://api.netatmo.com/oauth2/authorize` (scope `read_station`), then `POST /oauth2/token` (`authorization_code`, then `refresh_token`) |
+| Latest measurements | `GET /api/getstationsdata` → `body.devices[0]` (indoor module) and `modules[]` of type `NAModule1` (outdoor) |
+| Indoor history | `GET /api/getmeasure` `scale=30min`, `type=temperature,humidity,co2,noise,pressure`, `optimize=true` |
+| Outdoor history | `GET /api/getmeasure` with `module_id`, `type=temperature,humidity` |
 
-Le jeton d'accès est renouvelé automatiquement (et une fois de plus en cas de 401/403) ;
-une erreur 5xx ou réseau est réessayée une fois.
+The access token is renewed automatically (and once more on a 401/403); a 5xx or network
+error is retried once.
 
-### Contraintes de la montre
+### Watch constraints
 
-- **Mémoire** : l'aperçu et la tâche de fond disposent d'environ 64 Ko ; les données partagées
-  sont donc stockées sous une forme compacte (`current`, `history`).
-- **Temps de calcul** : la montre arrête une app qui calcule trop longtemps d'un coup
-  (*watchdog*). Le dégradé des barres est donc calculé une fois par ligne de 3 px, puis
-  réutilisé pour toutes les barres.
-- **Polices** : les chiffres de l'aperçu utilisent des polices vectorielles
-  (`Graphics.getVectorFont`) pour être dimensionnés au pixel près ; d'où la limitation aux
-  montres qui en disposent.
-- **Indicateur de page** : la boucle de vues native (`ViewLoop`) impose un grand arc ; l'app
-  enchaîne donc ses vues avec `switchToView` (`SLIDE_UP` / `SLIDE_DOWN`) et dessine ses propres
-  points (en colonne sur les écrans rectangulaires).
-- **Fluidité du glissement** : la montre doit avoir dessiné le nouvel écran avant de lancer
-  l'animation. Chaque écran est donc dessiné une seule fois dans une image en mémoire graphique
-  (`Graphics.createBufferedBitmap`), puis simplement recopié ; les écrans voisins sont préparés
-  juste après l'affichage. Au retour après une notification, qui peut réutiliser cette mémoire,
-  l'écran est redessiné entièrement. 3 images sont réutilisées (affiché + voisins) plutôt que
-  libérées et recréées, ce qui pouvait en effacer le contenu.
-- **Langues** : textes dans `resources/strings` (anglais, par défaut) et
-  `resources-fre/strings` (français).
+- **Memory**: the glance and the background task get about 64 KB, so shared data is stored in
+  a compact form (`current`, `history`).
+- **Compute time**: the watch kills an app that computes for too long in one go (*watchdog*).
+  The bar gradient is therefore computed once per 3 px row, then reused for every bar.
+- **Fonts**: the glance digits use vector fonts (`Graphics.getVectorFont`) to be sized to the
+  pixel; hence the restriction to watches that have them.
+- **Page indicator**: the native view loop (`ViewLoop`) imposes a large arc, so the app chains
+  its views with `switchToView` (`SLIDE_UP` / `SLIDE_DOWN`) and draws its own dots (a column on
+  rectangular screens).
+- **Smooth sliding**: the watch must have drawn the new screen before it starts the animation.
+  Each screen is therefore drawn once into an image in graphics memory
+  (`Graphics.createBufferedBitmap`) and then simply copied; neighbouring screens are prepared
+  right after display. When returning from a notification, which may reuse that memory, the
+  screen is fully redrawn. 3 images are reused (current + neighbours) rather than freed and
+  recreated, which could wipe their content.
+- **Languages**: strings in `resources/strings` (English, default) and `resources-fre/strings`
+  (French).
 
-### Structure de l'app Connect IQ
+### Connect IQ app structure
 
-| Fichier | Rôle |
+| File | Role |
 |---|---|
-| `source/NetatmoApp.mc` | point d'entrée, vue complète, aperçu, tâche de fond, réglages |
-| `source/NetatmoGlanceView.mc` | aperçu (maison à gauche, extérieur à droite) |
-| `source/MainView.mc` | `NetatmoStore` (chargement, connexion), `PageView` (un écran « Tendance »), messages |
-| `source/Pages.mc` | navigation entre les 4 écrans |
-| `source/Netatmo.mc` | accès à l'API, jetons, conversion des réponses |
-| `source/NetatmoService.mc` | tâche de fond (dernières mesures pour l'aperçu) |
-| `source/Draw.mc` | symboles, jauges, couleurs, polices |
-| `source/Demo.mc` | données d'exemple (mode démo) |
-| `source-secrets/Secrets.mc` | identifiants de l'app Netatmo (non versionné) |
+| `source/NetatmoApp.mc` | entry point, full view, glance, background task, settings |
+| `source/NetatmoGlanceView.mc` | glance (home on the left, outdoor on the right) |
+| `source/MainView.mc` | `NetatmoStore` (loading, sign-in), `PageView` (one "trend" screen), messages |
+| `source/Pages.mc` | navigation between the 4 screens |
+| `source/Netatmo.mc` | API access, tokens, response parsing |
+| `source/NetatmoService.mc` | background task (latest measurements for the glance) |
+| `source/Draw.mc` | symbols, gauges, colours, fonts |
+| `source/Demo.mc` | sample data (demo mode) |
+| `source-secrets/Secrets.mc` | Netatmo app credentials (not committed) |
 
-### Arborescence
+### Tree
 
 ```
 .
-├── README.md
-├── docs/                        # captures du README
-│   └── store/                   # fiche Store, confidentialité, logo, captures Store
-├── netatmo_explore.py           # script d'exploration de l'API
+├── README.md                    # English
+├── README.fr.md                 # French
+├── docs/                        # README screenshots
+│   └── store/                   # Store listing, privacy, logo, Store images
+├── netatmo_explore.py           # API exploration script
 └── garmin/
-    ├── manifest.xml             # 57 modèles cibles, permissions, langues
-    ├── monkey.jungle            # sources, icône par modèle
-    ├── build.sh                 # compilation / simulateur
-    ├── Secrets.example.mc       # modèle des identifiants (à copier)
-    ├── resources/               # icône, chaînes (anglais), réglage « Mode démo »
-    ├── resources-fre/           # chaînes en français
-    ├── resources-icon40 … 70/   # icône à la taille de chaque montre
-    └── source/                  # code Monkey C
+    ├── manifest.xml             # 57 target models, permissions, languages
+    ├── monkey.jungle            # sources, per-model icon
+    ├── build.sh                 # build / simulator
+    ├── Secrets.example.mc       # credentials template (to copy)
+    ├── resources/               # icon, strings (English), "Demo mode" setting
+    ├── resources-fre/           # French strings
+    ├── resources-icon40 … 70/   # icon at each watch's size
+    └── source/                  # Monkey C code
 ```
