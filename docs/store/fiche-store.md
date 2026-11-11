@@ -17,6 +17,7 @@ Anglais en premier (langue par défaut de la fiche), français ensuite.
 | Politique de confidentialité | https://github.com/glelouarn/netatmo-garmin/blob/main/docs/store/PRIVACY.md |
 | Fichier | `garmin/bin/store/TrendsForNetatmo.iq` |
 | Icône Store | `docs/store/icone-store.png` (500 × 500) |
+| Image hero | `docs/store/hero-1440x720.png` (1440 × 720) |
 | Captures | `docs/store/captures/` (454 × 454 : apercu, ecran-1 … ecran-4) |
 
 ---
