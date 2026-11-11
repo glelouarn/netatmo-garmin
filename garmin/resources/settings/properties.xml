@@ -1,0 +1,3 @@
+<properties>
+    <property id="demo" type="boolean">false</property>
+</properties>

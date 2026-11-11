@@ -59,6 +59,19 @@ class NetatmoApp extends Application.AppBase {
         WatchUi.requestUpdate();
     }
 
+    // Réglages modifiés dans Garmin Connect : en entrant ou sortant du mode démo,
+    // les mesures affichées ne valent plus -> rechargement.
+    (:typecheck(disableBackgroundCheck))
+    function onSettingsChanged() as Void {
+        var demo = Netatmo.isDemo();
+        if (Application.Storage.getValue("demoShown") != demo) {
+            Application.Storage.setValue("demoShown", demo);
+            Application.Storage.deleteValue("current");
+            Application.Storage.deleteValue("history");
+        }
+        WatchUi.requestUpdate();
+    }
+
     (:glance)
     function registerRefresh() as Void {
         var reg = Background.getTemporalEventRegisteredTime();

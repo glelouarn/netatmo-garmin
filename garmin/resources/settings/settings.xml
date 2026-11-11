@@ -1,8 +1,5 @@
 <settings>
-    <setting propertyKey="@Properties.clientId" title="@Strings.ClientIdTitle">
-        <settingConfig type="alphaNumeric"/>
-    </setting>
-    <setting propertyKey="@Properties.clientSecret" title="@Strings.ClientSecretTitle">
-        <settingConfig type="alphaNumeric"/>
+    <setting propertyKey="@Properties.demo" title="@Strings.DemoTitle" prompt="@Strings.DemoPrompt">
+        <settingConfig type="boolean"/>
     </setting>
 </settings>

@@ -13,31 +13,29 @@ if [ -z "$SDK" ] || [ ! -x "$SDK/bin/monkeyc" ]; then
 fi
 [ -x "$SDK/bin/monkeyc" ] || { echo "SDK Connect IQ introuvable (installe-le avec le SDK Manager)"; exit 1; }
 
-PROPS=resources/settings/properties.xml
+SECRETS=source-secrets/Secrets.mc
 CONFIG=../netatmo_config.json
-if [ ! -f "$PROPS" ]; then
+if [ ! -f "$SECRETS" ]; then
+    mkdir -p source-secrets
     if [ -f "$CONFIG" ]; then
-        # Reprend le client_id / client_secret enregistrés par netatmo_explore.py
-        python3 - "$CONFIG" "$PROPS" <<'PY'
+        # Reprend le client_id / client_secret de l'app Netatmo (netatmo_explore.py)
+        python3 - "$CONFIG" "$SECRETS" <<'PY'
 import json, sys
-from xml.sax.saxutils import escape
 c = json.load(open(sys.argv[1]))
+q = lambda v: v.replace("\\", "\\\\").replace('"', '\\"')
 open(sys.argv[2], "w").write(
-    "<properties>\n"
-    f'    <property id="clientId" type="string">{escape(c["client_id"])}</property>\n'
-    f'    <property id="clientSecret" type="string">{escape(c["client_secret"])}</property>\n'
-    "</properties>\n")
+    "(:background, :glance)\nmodule Secrets {\n"
+    f'    const CLIENT_ID = "{q(c["client_id"])}";\n'
+    f'    const CLIENT_SECRET = "{q(c["client_secret"])}";\n'
+    "}\n")
 PY
-        chmod 600 "$PROPS"
-        echo "Créé $PROPS depuis $CONFIG."
+        chmod 600 "$SECRETS"
+        echo "Créé $SECRETS depuis $CONFIG."
     else
-        cp properties.example.xml "$PROPS"
-        echo "Créé $PROPS depuis le modèle : renseigne clientId et clientSecret, puis relance."
+        cp Secrets.example.mc "$SECRETS"
+        echo "Créé $SECRETS depuis le modèle : renseigne CLIENT_ID et CLIENT_SECRET, puis relance."
         exit 1
     fi
-fi
-if grep -q "TON_CLIENT_ID\|TON_CLIENT_SECRET" "$PROPS"; then
-    echo "Attention : $PROPS contient encore les valeurs d'exemple (l'app affichera « ID client non réglé »)."
 fi
 if [ ! -f developer_key.der ]; then
     echo "Pas de clé de signature : génération de developer_key.der (à conserver précieusement)."
@@ -52,11 +50,11 @@ if [ "${1:-}" = "sim" ]; then SIM=1; shift; fi
 DEVICE="${1:-fenix847mm}"
 
 mkdir -p bin
-"$SDK/bin/monkeyc" -f monkey.jungle -d "$DEVICE" -y developer_key.der -o bin/NetatmoMeteo.prg -w
-echo "OK : bin/NetatmoMeteo.prg ($DEVICE)"
+"$SDK/bin/monkeyc" -f monkey.jungle -d "$DEVICE" -y developer_key.der -o bin/TrendsForNetatmo.prg -w
+echo "OK : bin/TrendsForNetatmo.prg ($DEVICE)"
 
 if [ "$SIM" = 1 ]; then
     open -a "$SDK/bin/ConnectIQ.app" 2>/dev/null || "$SDK/bin/connectiq" &
     sleep 4
-    "$SDK/bin/monkeydo" bin/NetatmoMeteo.prg "$DEVICE"
+    "$SDK/bin/monkeydo" bin/TrendsForNetatmo.prg "$DEVICE"
 fi

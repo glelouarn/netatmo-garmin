@@ -5,14 +5,15 @@ import Toybox.Lang;
 (:glance)
 module Draw {
 
-    const LOGO = 0xFE8E15;      // orange du logo : niveau sonore
-    const TEMP = LOGO;          // courbe de température : orange du logo
+    const AMBER = 0xF0A014;     // ambre du logo et du bonnet : couleur des courbes
+    const LOGO = AMBER;
+    const TEMP = AMBER;         // courbe de température
     const HUMI = 0x2FB8F5;      // humidité
     const HUMI_LO = 0x1A3CE8;   // bas des barres d'humidité
     const CO2C = 0x5EE07A;      // CO2
     const CO2_LO = 0x0E7A30;    // bas des barres de CO2
-    const PRES = 0xE6E6E6;      // pression
-    const NEUTRAL = 0xD8D8D8;   // courbe de CO2
+    const PRES = AMBER;         // courbe de pression
+    const NEUTRAL = 0xD8D8D8;   // courbe de CO2 (gris neutre, lisible sur les barres de bruit)
     const SUN  = 0xFFC83D;      // soleil du symbole extérieur
     const DIM  = 0x8A8A8A;      // textes secondaires
     const GRID = 0x9A9A9A;      // pointillés
@@ -33,7 +34,7 @@ module Draw {
                     Graphics.FONT_MEDIUM, Graphics.FONT_LARGE];
         var best = list[0];
         for (var i = 0; i < list.size(); i++) {
-            if (Graphics.getFontHeight(list[i]) <= size * 125 / 100) {
+            if (Graphics.getFontHeight(list[i]) <= size) {
                 best = list[i];
             }
         }

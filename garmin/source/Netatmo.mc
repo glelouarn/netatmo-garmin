@@ -24,19 +24,20 @@ module Netatmo {
 
     // ------------------------------------------------------------ réglages
 
+    // Identifiants de l'app Netatmo (source-secrets/Secrets.mc, non versionné).
     function clientId() as String or Null {
-        var v = Application.Properties.getValue("clientId") as String or Null;
-        return (v == null || v.length() == 0 || v.equals("TON_CLIENT_ID")) ? null : v;
+        var v = Secrets.CLIENT_ID;
+        return (v.length() == 0 || v.equals("TON_CLIENT_ID")) ? null : v;
     }
 
     function clientSecret() as String or Null {
-        var v = Application.Properties.getValue("clientSecret") as String or Null;
-        return (v == null || v.length() == 0 || v.equals("TON_CLIENT_SECRET")) ? null : v;
+        var v = Secrets.CLIENT_SECRET;
+        return (v.length() == 0 || v.equals("TON_CLIENT_SECRET")) ? null : v;
     }
 
+    // Réglage « Mode démo » (Garmin Connect) : données d'exemple, sans compte.
     function isDemo() as Boolean {
-        var id = clientId();
-        return id != null && id.equals("demo");
+        return Application.Properties.getValue("demo") == true;
     }
 
     // ------------------------------------------------------------ jetons
@@ -189,31 +190,6 @@ module Netatmo {
     }
 
     // Message court et lisible pour un code de réponse en échec.
-    function errorText(code as Number, data) as String {
-        if (code == AUTH_REQUIRED) {
-            return "Connexion requise";
-        } else if (code == NOT_CONFIGURED) {
-            return "ID client non réglé";
-        } else if (code == Communications.BLE_CONNECTION_UNAVAILABLE
-                || code == Communications.BLE_HOST_TIMEOUT
-                || code == Communications.BLE_QUEUE_FULL) {
-            return "Téléphone non connecté";
-        } else if (code == Communications.NETWORK_REQUEST_TIMED_OUT
-                || code == Communications.BLE_SERVER_TIMEOUT) {
-            return "Délai dépassé";
-        } else if (code == Communications.NETWORK_RESPONSE_TOO_LARGE
-                || code == Communications.INVALID_HTTP_BODY_IN_NETWORK_RESPONSE) {
-            return "Réponse illisible";
-        }
-        if (data instanceof Dictionary) {
-            var err = data["error"];
-            if (err instanceof Dictionary && err["message"] != null) {
-                // message de l'API souvent long et en anglais : texte court
-                return code >= 500 ? "Netatmo indisponible" : "Erreur Netatmo " + code;
-            }
-        }
-        return code >= 500 ? "Netatmo indisponible" : "Erreur " + code;
-    }
 }
 
 // Une requête GET à l'API Netatmo, avec renouvellement automatique du jeton.

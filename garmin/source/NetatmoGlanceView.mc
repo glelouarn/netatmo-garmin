@@ -29,10 +29,18 @@ class NetatmoGlanceView extends WatchUi.GlanceView {
             c = Demo.data(false);
         }
         if (c == null) {
+            // pas encore de mesures : nom de l'app, et dessous ce qu'il reste à faire
+            var hint = Netatmo.clientId() == null ? Rez.Strings.GlanceSetup
+                : Netatmo.hasLogin() || Netatmo.isDemo() ? null : Rez.Strings.GlanceConnect;
+            var j = Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER;
+            var name = WatchUi.loadResource(Rez.Strings.AppName) as String;
             dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(0, H / 2, Graphics.FONT_GLANCE,
-                Netatmo.hasLogin() || Netatmo.isDemo() ? "Météo Netatmo" : "Netatmo : ouvrir pour connecter",
-                Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(0, hint == null ? H / 2 : H * 32 / 100, fitFont(dc, name, W, 0), name, j);
+            if (hint != null) {
+                var txt = WatchUi.loadResource(hint) as String;
+                dc.setColor(Draw.DIM, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(0, H * 72 / 100, fitFont(dc, txt, W, 2), txt, j);
+            }
             return;
         }
         var out = c["out"] as Dictionary or Null;
@@ -87,6 +95,14 @@ class NetatmoGlanceView extends WatchUi.GlanceView {
             bs -= 2;
         }
 
+        // polices système (pas de polices vectorielles) : si min/max ne tiennent pas
+        // même au plus petit, on les masque plutôt que de chevaucher la maison
+        var showMM = leftW + rightW + minGap <= W - 2;
+        if (!showMM) {
+            outW = symS + g + outTopW;
+            rightW = outW + g + colW;
+        }
+
         var cy = H / 2;
         var barTop = (H - (barH + gapV + colSym)) / 2;
         var symY = barTop + barH + gapV + colSym / 2;
@@ -108,7 +124,7 @@ class NetatmoGlanceView extends WatchUi.GlanceView {
         x = W - rightW;
         var mmGap = mmH * 8 / 10;
         var topH = digitH > symS ? digitH : symS;
-        var stack = topH + mmGap + mmH;
+        var stack = showMM ? topH + mmGap + mmH : topH;
         var rowY = cy - stack / 2 + topH / 2;
         var mmY = cy - stack / 2 + topH + mmGap + mmH / 2;
         var tx = x + (outW - (symS + g + outTopW)) / 2;
@@ -116,18 +132,32 @@ class NetatmoGlanceView extends WatchUi.GlanceView {
         var bx = tx + symS + g;
         Draw.trend(dc, bx + chevW / 2, rowY + digitH / 8, chevW, out["tr"] as String or Null, Draw.DIM);
         drawTemp(dc, bx + chevW + g / 2, rowY, outT, big, dec, digitH, fg);
-        var aw = mmH * 80 / 100;
-        var mx = x + (outW - minMaxWidth(dc, minTxt, maxTxt, mm, mmH)) / 2;
-        Draw.minMaxArrow(dc, mx + aw / 2, mmY, aw, false, Draw.DIM);
-        mx += aw + 2;
-        drawCapText(dc, mx, mmY, mm, mmH, minTxt, fg);
-        mx += dc.getTextWidthInPixels(minTxt, mm) + mmH * 6 / 10;
-        Draw.minMaxArrow(dc, mx + aw / 2, mmY, aw, true, Draw.DIM);
-        mx += aw + 2;
-        drawCapText(dc, mx, mmY, mm, mmH, maxTxt, fg);
+        if (showMM) {
+            var aw = mmH * 80 / 100;
+            var mx = x + (outW - minMaxWidth(dc, minTxt, maxTxt, mm, mmH)) / 2;
+            Draw.minMaxArrow(dc, mx + aw / 2, mmY, aw, false, Draw.DIM);
+            mx += aw + 2;
+            drawCapText(dc, mx, mmY, mm, mmH, minTxt, fg);
+            mx += dc.getTextWidthInPixels(minTxt, mm) + mmH * 6 / 10;
+            Draw.minMaxArrow(dc, mx + aw / 2, mmY, aw, true, Draw.DIM);
+            mx += aw + 2;
+            drawCapText(dc, mx, mmY, mm, mmH, maxTxt, fg);
+        }
         x += outW + g;
         drawGauge(dc, x, colW, barW, barTop, barH, symY, colSym,
                   frac(out["h"], 0.0, 100.0), Draw.HUMI, :drop);
+    }
+
+    // Plus grande police (à partir de la n-ième de la liste) où le texte tient en largeur.
+    function fitFont(dc as Graphics.Dc, txt as String, w as Number, from as Number)
+            as Graphics.FontDefinition {
+        var fonts = [Graphics.FONT_GLANCE, Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_XTINY];
+        for (var i = from; i < fonts.size() - 1; i++) {
+            if (dc.getTextWidthInPixels(txt, fonts[i] as Graphics.FontDefinition) <= w) {
+                return fonts[i] as Graphics.FontDefinition;
+            }
+        }
+        return Graphics.FONT_XTINY;
     }
 
     // Jauge verticale et son symbole centré en dessous.
@@ -151,7 +181,7 @@ class NetatmoGlanceView extends WatchUi.GlanceView {
 
     // Hauteur des chiffres (police vectorielle : ~72 % de la taille).
     function capHeight(font as Graphics.FontType, size as Number) as Number {
-        if (font instanceof Graphics.VectorFont) {
+        if ((Graphics has :VectorFont) && font instanceof Graphics.VectorFont) {
             return size * 72 / 100;
         }
         return (Graphics.getFontAscent(font as Graphics.FontDefinition) * 72 / 100).toNumber();

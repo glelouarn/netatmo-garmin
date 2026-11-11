@@ -1,5 +1,27 @@
 <strings>
-    <string id="AppName">Météo Netatmo</string>
-    <string id="ClientIdTitle">Netatmo client_id</string>
-    <string id="ClientSecretTitle">Netatmo client_secret</string>
+    <string id="AppName" scope="glance">Trends for Netatmo</string>
+    <string id="GlanceConnect" scope="glance">Open to sign in</string>
+    <string id="GlanceSetup" scope="glance">App not configured</string>
+    <string id="Loading">Loading…</string>
+    <string id="Refreshing">Refreshing…</string>
+    <string id="DataFrom">Data from </string>
+    <string id="LoginPrompt">Netatmo sign-in:\nopen the notification\non your phone</string>
+    <string id="LoginRefused">Sign-in refused</string>
+    <string id="Connecting">Connecting…</string>
+    <string id="LoginError">Sign-in: </string>
+    <string id="ErrAuth">Sign-in required</string>
+    <string id="ErrConfig">App not configured</string>
+    <string id="ErrPhone">Phone not connected</string>
+    <string id="ErrTimeout">Timed out</string>
+    <string id="ErrBadResp">Unreadable response</string>
+    <string id="ErrUnavail">Netatmo unavailable</string>
+    <string id="ErrNetatmo">Netatmo error </string>
+    <string id="ErrGeneric">Error </string>
+    <string id="Temp">Temp.</string>
+    <string id="Humidity">Humidity</string>
+    <string id="HumShort">Hum.</string>
+    <string id="Noise">Noise</string>
+    <string id="Pressure">Pressure</string>
+    <string id="DemoTitle">Demo mode</string>
+    <string id="DemoPrompt">Show sample data without a Netatmo account</string>
 </strings>

@@ -1,0 +1,27 @@
+<strings>
+    <string id="AppName" scope="glance">Trends for Netatmo</string>
+    <string id="GlanceConnect" scope="glance">Ouvrir pour se connecter</string>
+    <string id="GlanceSetup" scope="glance">App non configurée</string>
+    <string id="Loading">Chargement…</string>
+    <string id="Refreshing">Actualisation…</string>
+    <string id="DataFrom">Données de </string>
+    <string id="LoginPrompt">Connexion Netatmo :\nouvre la notification\nsur ton téléphone</string>
+    <string id="LoginRefused">Connexion refusée</string>
+    <string id="Connecting">Connexion…</string>
+    <string id="LoginError">Connexion : </string>
+    <string id="ErrAuth">Connexion requise</string>
+    <string id="ErrConfig">App non configurée</string>
+    <string id="ErrPhone">Téléphone non connecté</string>
+    <string id="ErrTimeout">Délai dépassé</string>
+    <string id="ErrBadResp">Réponse illisible</string>
+    <string id="ErrUnavail">Netatmo indisponible</string>
+    <string id="ErrNetatmo">Erreur Netatmo </string>
+    <string id="ErrGeneric">Erreur </string>
+    <string id="Temp">Temp.</string>
+    <string id="Humidity">Humidité</string>
+    <string id="HumShort">Hum.</string>
+    <string id="Noise">Bruit</string>
+    <string id="Pressure">Pression</string>
+    <string id="DemoTitle">Mode démo</string>
+    <string id="DemoPrompt">Données d'exemple, sans compte Netatmo</string>
+</strings>

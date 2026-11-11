@@ -5,15 +5,48 @@ import Toybox.Lang;
 import Toybox.Math;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
+import Toybox.System;
 import Toybox.Timer;
 import Toybox.WatchUi;
 
 // Quatre écrans « Tendance 24 h » (navigation : voir Pages.mc) :
 //   0 : intérieur, température et humidité
-//   1 : intérieur, CO2 et bruit
-//   2 : extérieur, température et humidité
+//   1 : extérieur, température et humidité
+//   2 : intérieur, CO2 et bruit
 //   3 : pression atmosphérique
 // Données des 4 écrans : chargées une seule fois (à l'ouverture), partagées par les vues.
+// Texte traduit (anglais par défaut, français si la montre est en français).
+function tr(id as ResourceId) as String {
+    return WatchUi.loadResource(id) as String;
+}
+
+// Message court pour une erreur Netatmo / réseau.
+function errorText(code as Number, data) as String {
+    if (code == Netatmo.AUTH_REQUIRED) {
+        return tr(Rez.Strings.ErrAuth);
+    } else if (code == Netatmo.NOT_CONFIGURED) {
+        return tr(Rez.Strings.ErrConfig);
+    } else if (code == Communications.BLE_CONNECTION_UNAVAILABLE
+            || code == Communications.BLE_HOST_TIMEOUT
+            || code == Communications.BLE_QUEUE_FULL) {
+        return tr(Rez.Strings.ErrPhone);
+    } else if (code == Communications.NETWORK_REQUEST_TIMED_OUT
+            || code == Communications.BLE_SERVER_TIMEOUT) {
+        return tr(Rez.Strings.ErrTimeout);
+    } else if (code == Communications.NETWORK_RESPONSE_TOO_LARGE
+            || code == Communications.INVALID_HTTP_BODY_IN_NETWORK_RESPONSE) {
+        return tr(Rez.Strings.ErrBadResp);
+    }
+    if (data instanceof Dictionary) {
+        var err = data["error"];
+        if (err instanceof Dictionary && err["message"] != null) {
+            // message de l'API souvent long et en anglais : texte court
+            return code >= 500 ? tr(Rez.Strings.ErrUnavail) : tr(Rez.Strings.ErrNetatmo) + code;
+        }
+    }
+    return code >= 500 ? tr(Rez.Strings.ErrUnavail) : tr(Rez.Strings.ErrGeneric) + code;
+}
+
 class NetatmoStore {
 
     var _data as Dictionary or Null;
@@ -168,7 +201,7 @@ class NetatmoStore {
             startLogin();
             return;
         }
-        _status = Netatmo.errorText(code, data);
+        _status = errorText(code, data);
         WatchUi.requestUpdate();
     }
 
@@ -185,7 +218,7 @@ class NetatmoStore {
                 "state" => state
             }, Netatmo.REDIRECT_URI, Communications.OAUTH_RESULT_TYPE_URL,
             { "code" => "code", "state" => "state", "error" => "error" });
-        _status = "Connexion Netatmo :\nouvre la notification\nsur ton téléphone";
+        _status = tr(Rez.Strings.LoginPrompt);
         WatchUi.requestUpdate();
     }
 
@@ -194,12 +227,12 @@ class NetatmoStore {
         var code = d != null ? d["code"] : null;
         var expected = Application.Storage.getValue("oauth_state");
         if (code == null || expected == null || !expected.equals(d["state"])) {
-            _status = "Connexion refusée";
+            _status = tr(Rez.Strings.LoginRefused);
             WatchUi.requestUpdate();
             return;
         }
         Application.Storage.deleteValue("oauth_state");
-        _status = "Connexion…";
+        _status = tr(Rez.Strings.Connecting);
         WatchUi.requestUpdate();
         Netatmo.exchangeCode(code as String, method(:onAuthToken));
     }
@@ -210,7 +243,7 @@ class NetatmoStore {
             _status = null;
             refresh();
         } else {
-            _status = "Connexion : " + Netatmo.errorText(code, data);
+            _status = tr(Rez.Strings.LoginError) + errorText(code, data);
             WatchUi.requestUpdate();
         }
     }
@@ -361,7 +394,7 @@ class PageView extends WatchUi.View {
         if (d == null) {
             dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             dc.drawText(W / 2, H / 2, Graphics.FONT_SMALL,
-                _store._status != null ? _store._status : "Chargement…",
+                _store._status != null ? _store._status : tr(Rez.Strings.Loading),
                 Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
             return;
         }
@@ -386,19 +419,19 @@ class PageView extends WatchUi.View {
         // barres (ou null) puis courbe de chaque écran
         var bars = null as Bars or Null;
         var line;
-        var indoor = page <= 1;
+        var indoor = page == 0 || page == 2;
         if (page == 0) {
-            bars = new Bars("Humidité", "Hum.", hist["ih"] as Array, Draw.HUMI, Draw.HUMI_LO, 0.0, 100.0);
-            line = new Line("Temp.", hist["it"] as Array, Draw.TEMP, 2.0, "°");
-        } else if (page == 1) {
-            bars = new Bars("Bruit", "Bruit", hist["n"] as Array, Draw.LOGO, Draw.LOGO, 30.0, 80.0);
+            bars = new Bars(tr(Rez.Strings.Humidity), tr(Rez.Strings.HumShort), hist["ih"] as Array, Draw.HUMI, Draw.HUMI_LO, 0.0, 100.0);
+            line = new Line(tr(Rez.Strings.Temp), hist["it"] as Array, Draw.TEMP, 2.0, "°");
+        } else if (page == 2) {
+            bars = new Bars(tr(Rez.Strings.Noise), tr(Rez.Strings.Noise), hist["n"] as Array, Draw.LOGO, Draw.LOGO, 30.0, 80.0);
             bars.noise = true;
             line = new Line("CO2", hist["co2"] as Array, Draw.NEUTRAL, 200.0, "ppm");
-        } else if (page == 2) {
-            bars = new Bars("Humidité", "Hum.", hist["oh"] as Array, Draw.HUMI, Draw.HUMI_LO, 0.0, 100.0);
-            line = new Line("Temp.", hist["ot"] as Array, Draw.TEMP, 2.0, "°");
+        } else if (page == 1) {
+            bars = new Bars(tr(Rez.Strings.Humidity), tr(Rez.Strings.HumShort), hist["oh"] as Array, Draw.HUMI, Draw.HUMI_LO, 0.0, 100.0);
+            line = new Line(tr(Rez.Strings.Temp), hist["ot"] as Array, Draw.TEMP, 2.0, "°");
         } else {
-            line = new Line("Pression", hist["p"] as Array, Draw.PRES, 4.0, "hPa");
+            line = new Line(tr(Rez.Strings.Pressure), hist["p"] as Array, Draw.PRES, 4.0, "hPa");
         }
 
         _line = line;
@@ -416,6 +449,12 @@ class PageView extends WatchUi.View {
         }
         if (hw > avail) {
             name1 = line.shortName;
+            hw = headerWidth(dc, iconS, name1, name2, lf);
+        }
+        if (hw > avail) {
+            // petits écrans : police plus petite
+            lf = Graphics.FONT_XTINY;
+            iconS = dc.getFontHeight(lf) * 75 / 100;
             hw = headerWidth(dc, iconS, name1, name2, lf);
         }
         var hx = (W - hw) / 2;
@@ -474,10 +513,15 @@ class PageView extends WatchUi.View {
         var R = (W < H ? W : H) / 2 - (W * 3 / 100 + 3);
         var Rc = R * 55 / 100;
         var stepA = 26.0 / Rc;                   // ~26 px entre deux points
+        var round = System.getDeviceSettings().screenShape == System.SCREEN_SHAPE_ROUND;
         for (var p = 0; p < PAGES; p++) {
             var a = Math.PI + (p - (PAGES - 1) / 2.0) * stepA;   // haut -> bas
             var px = W / 2 - R + Rc + (Rc * Math.cos(a)).toNumber();
             var py = H / 2 - (Rc * Math.sin(a)).toNumber();
+            if (!round) {
+                // écran rectangulaire : simple colonne le long du bord gauche
+                px = W * 4 / 100 + 3;
+            }
             dc.setColor(p == _page ? Graphics.COLOR_WHITE : 0x555555, Graphics.COLOR_TRANSPARENT);
             dc.fillCircle(px, py, p == _page ? 3 : 2);
         }
@@ -487,7 +531,7 @@ class PageView extends WatchUi.View {
         // ---- État (chargement / erreur)
         var st = _store._status;
         if (st == null && _store._loading) {
-            st = "Actualisation…";
+            st = tr(Rez.Strings.Refreshing);
         }
         if (st != null) {
             // échec alors que des courbes sont affichées : simple rappel, en gris,
@@ -499,7 +543,7 @@ class PageView extends WatchUi.View {
                 var hhmm = info.hour.format("%02d") + ":" + info.min.format("%02d");
                 st = st + " · " + hhmm;
                 if (dc.getTextWidthInPixels(st as String, Graphics.FONT_XTINY) > W * 64 / 100) {
-                    st = "Données de " + hhmm;
+                    st = tr(Rez.Strings.DataFrom) + hhmm;
                 }
             } else if (_store._status != null) {
                 color = Graphics.COLOR_RED;
