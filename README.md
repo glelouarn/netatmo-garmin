@@ -1,6 +1,6 @@
-<img src="docs/store/logo-1024.png" width="120" align="right" alt="Logo Trends for Netatmo">
+<p align="center"><img src="docs/store/logo-1024.png" width="140" alt="Logo Trends for Netatmo"></p>
 
-# Trends for Netatmo
+<h1 align="center">Trends for Netatmo</h1>
 
 Les mesures d'une station météo **Netatmo** sur une montre Garmin : un aperçu lisible en une
 seconde dans la liste des glances, et quatre écrans « Tendance 24 h ».
