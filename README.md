@@ -2,6 +2,8 @@
 
 <h1 align="center">Trends for Netatmo</h1>
 
+<p align="center"><a href="https://apps.garmin.com/apps/9cda70a7-ebe9-4638-a621-8eb39ff1e7c3"><b>▶ Installer depuis le Connect IQ Store</b></a></p>
+
 Les mesures d'une station météo **Netatmo** sur une montre Garmin : un aperçu lisible en une
 seconde dans la liste des glances, et quatre écrans « Tendance 24 h ».
 La montre interroge directement l'API officielle Netatmo : **aucun serveur** à installer.
@@ -233,13 +235,14 @@ associés aux modèles dans `monkey.jungle`).
      -o bin/store/TrendsForNetatmo.iq -r -w
    ```
 
-2. Sur https://apps.garmin.com/developer : **Upload an app**, déposer
+2. Première publication sur https://apps.garmin.com/developer : **Upload an app**, déposer
    `bin/store/TrendsForNetatmo.iq`, puis remplir la fiche avec les textes de
    [`docs/store/fiche-store.md`](docs/store/fiche-store.md) (anglais et français, notes pour
    les testeurs), le logo [`docs/store/icone-store.png`](docs/store/icone-store.png) et les
    captures [`docs/store/captures/`](docs/store/captures/).
 3. Politique de confidentialité : [`docs/store/PRIVACY.md`](docs/store/PRIVACY.md).
-4. Mise à jour : même clé de signature, numéro de version augmenté, nouveau `.iq`.
+4. Mise à jour : sur la [page Store de l'app](https://apps.garmin.com/apps/9cda70a7-ebe9-4638-a621-8eb39ff1e7c3), **Upload New Version** ; même clé de
+   signature, numéro de version augmenté, nouveau `.iq`.
 
 ---
 

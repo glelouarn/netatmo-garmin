@@ -28,7 +28,7 @@ You can revoke the app's access at any time from your Netatmo account settings.
 
 ## Contact
 
-Questions: open an issue at https://github.com/glelouarn/netatmo-garmin/issues
+Questions: renardos.app@gmail.com, or open an issue at https://github.com/glelouarn/netatmo-garmin/issues
 
 ---
 
@@ -51,4 +51,4 @@ station météo Netatmo sur votre montre.
 - **Connexion :** elle se fait sur les pages de Netatmo ; l'app ne voit jamais votre mot de
   passe. Vous pouvez retirer l'accès à tout moment dans les réglages de votre compte Netatmo.
 
-Contact : https://github.com/glelouarn/netatmo-garmin/issues
+Contact : renardos.app@gmail.com, ou une issue sur https://github.com/glelouarn/netatmo-garmin/issues
