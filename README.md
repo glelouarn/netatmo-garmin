@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/store/logo-1024.png" width="140" alt="Trends for Netatmo logo"></p>
+<p align="center"><img src="docs/store/hero-1440x720.png" width="100%" alt="Trends for Netatmo: your indoor and outdoor climate trends on your Garmin"></p>
 
 <h1 align="center">Trends for Netatmo</h1>
 

@@ -1,6 +1,7 @@
 # Privacy policy: Trends for Netatmo
 
-*Last updated: 11 November 2026*
+*Last updated: 11 November 2026*  
+[Version française ci-dessous](#politique-de-confidentialité--trends-for-netatmo)
 
 **Trends for Netatmo** is a Garmin Connect IQ widget that displays the measurements of your
 Netatmo weather station on your watch.
@@ -39,16 +40,29 @@ Questions: renardos.app@gmail.com, or open an issue at https://github.com/glelou
 **Trends for Netatmo** est un widget Garmin Connect IQ qui affiche les mesures de votre
 station météo Netatmo sur votre montre.
 
-- **Données lues :** les mesures de votre station (température, humidité, CO₂, bruit,
-  pression), en lecture seule, via l'API officielle Netatmo (autorisation `read_station`),
-  ainsi que les jetons d'accès délivrés par Netatmo à la connexion.
-- **Où elles vont :** la montre interroge **directement** `api.netatmo.com`, via l'app
-  Garmin Connect du téléphone. **Aucun serveur du développeur**, aucun service tiers.
-- **Stockage :** jetons et dernières mesures sont gardés **uniquement sur la montre** et
-  supprimés à la désinstallation de l'app.
-- **Aucune collecte :** le développeur ne collecte, ne stocke, ne partage ni ne vend aucune
-  donnée personnelle ; pas de statistiques d'usage ni de publicité.
-- **Connexion :** elle se fait sur les pages de Netatmo ; l'app ne voit jamais votre mot de
-  passe. Vous pouvez retirer l'accès à tout moment dans les réglages de votre compte Netatmo.
+## Ce à quoi l'app accède
 
-Contact : renardos.app@gmail.com, ou une issue sur https://github.com/glelouarn/netatmo-garmin/issues
+- Les mesures de votre station météo Netatmo (température, humidité, CO₂, bruit, pression),
+  en lecture seule, via l'API officielle Netatmo (autorisation `read_station`).
+- Les jetons d'accès et de renouvellement délivrés par Netatmo lors de votre connexion.
+
+## Où vont vos données
+
+- La montre communique **directement** avec `api.netatmo.com`, via l'app Garmin Connect de
+  votre téléphone. Il n'y a **aucun serveur exploité par le développeur** ni aucun service
+  tiers.
+- Les jetons et les dernières mesures sont stockés **uniquement sur votre montre**, dans le
+  stockage privé de l'app. Ils sont supprimés lorsque vous désinstallez l'app.
+- Le développeur ne collecte, ne stocke, ne partage ni ne vend **aucune** donnée
+  personnelle, et l'app ne contient ni statistiques d'usage ni publicité.
+
+## Netatmo et Garmin
+
+La connexion se fait sur les pages de Netatmo ; votre mot de passe Netatmo n'est jamais vu
+par l'app. Votre utilisation des services Netatmo et Garmin est régie par leurs politiques de
+confidentialité respectives. Vous pouvez retirer l'accès de l'app à tout moment dans les
+réglages de votre compte Netatmo.
+
+## Contact
+
+Questions : renardos.app@gmail.com, ou une issue sur https://github.com/glelouarn/netatmo-garmin/issues
