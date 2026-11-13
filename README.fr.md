@@ -9,7 +9,7 @@
 Les mesures d'une station météo **Netatmo** sur une montre Garmin : un aperçu lisible en une
 seconde dans la liste des glances, et quatre écrans « Tendance 24 h ».
 La montre interroge directement l'API officielle Netatmo : **aucun serveur** à installer.
-App en **anglais et en français** (selon la langue de la montre), compatible avec **57 montres**.
+App en **anglais, français et allemand** (selon la langue de la montre), compatible avec **57 montres**.
 
 | Aperçu (glance) | 1 · Intérieur | 2 · Extérieur | 3 · CO2 et bruit | 4 · Pression |
 |:---:|:---:|:---:|:---:|:---:|
@@ -242,7 +242,7 @@ depuis le Store.
 
 2. Première publication sur https://apps.garmin.com/developer : **Upload an app**, déposer
    `bin/store/TrendsForNetatmo.iq`, puis remplir la fiche avec les textes de
-   [`docs/store/fiche-store.md`](docs/store/fiche-store.md) (anglais et français, notes pour
+   [`docs/store/fiche-store.md`](docs/store/fiche-store.md) (anglais, français et allemand, notes pour
    les testeurs), le logo [`docs/store/icone-store.png`](docs/store/icone-store.png), les images
    hero et les captures [`docs/store/captures/`](docs/store/captures/).
 3. Politique de confidentialité : [`docs/store/PRIVACY.md`](docs/store/PRIVACY.md).
@@ -304,7 +304,7 @@ une erreur 5xx ou réseau est réessayée une fois.
   l'écran est redessiné entièrement. 3 images sont réutilisées (affiché + voisins) plutôt que
   libérées et recréées, ce qui pouvait en effacer le contenu.
 - **Langues** : textes dans `resources/strings` (anglais, par défaut) et
-  `resources-fre/strings` (français).
+  `resources-fre/strings` (français) et `resources-deu/strings` (allemand).
 
 ### Structure de l'app Connect IQ
 
@@ -336,6 +336,7 @@ une erreur 5xx ou réseau est réessayée une fois.
     ├── Secrets.example.mc       # modèle des identifiants (à copier)
     ├── resources/               # icône, chaînes (anglais), réglage « Mode démo »
     ├── resources-fre/           # chaînes en français
+    ├── resources-deu/           # chaînes en allemand
     ├── resources-icon40 … 70/   # icône à la taille de chaque montre
     └── source/                  # code Monkey C
 ```

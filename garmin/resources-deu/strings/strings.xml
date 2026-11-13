@@ -1,0 +1,27 @@
+<strings>
+    <string id="AppName" scope="glance">Trends for Netatmo</string>
+    <string id="GlanceConnect" scope="glance">Zum Anmelden öffnen</string>
+    <string id="GlanceSetup" scope="glance">App nicht eingerichtet</string>
+    <string id="Loading">Wird geladen…</string>
+    <string id="Refreshing">Aktualisierung…</string>
+    <string id="DataFrom">Daten von </string>
+    <string id="LoginPrompt">Netatmo-Anmeldung:\nBenachrichtigung auf\ndem Handy öffnen</string>
+    <string id="LoginRefused">Anmeldung abgelehnt</string>
+    <string id="Connecting">Verbindung…</string>
+    <string id="LoginError">Anmeldung: </string>
+    <string id="ErrAuth">Anmeldung erforderlich</string>
+    <string id="ErrConfig">App nicht eingerichtet</string>
+    <string id="ErrPhone">Handy nicht verbunden</string>
+    <string id="ErrTimeout">Zeitüberschreitung</string>
+    <string id="ErrBadResp">Ungültige Antwort</string>
+    <string id="ErrUnavail">Netatmo nicht erreichbar</string>
+    <string id="ErrNetatmo">Netatmo-Fehler </string>
+    <string id="ErrGeneric">Fehler </string>
+    <string id="Temp">Temp.</string>
+    <string id="Humidity">Luftfeuchte</string>
+    <string id="HumShort">Feuchte</string>
+    <string id="Noise">Lärm</string>
+    <string id="Pressure">Luftdruck</string>
+    <string id="DemoTitle">Demo-Modus</string>
+    <string id="DemoPrompt">Beispieldaten ohne Netatmo-Konto anzeigen</string>
+</strings>

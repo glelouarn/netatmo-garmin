@@ -69,15 +69,15 @@ GETTING STARTED
 
 No station yet? Turn on Demo mode in the app settings (Garmin Connect) to try it with sample data.
 
-App languages: English and French.
+App languages: English, French and German.
 
 Netatmo weather station · station météo Netatmo · Netatmo Wetterstation · CO2 · humidity · noise · barometer
 
 Not affiliated with or endorsed by Netatmo. Netatmo is a trademark of its respective owner.
 
-### What's new (version 1.0.0)
+### What's new (version 1.0.1)
 
-First release: glance with indoor / outdoor measurements, four 24-hour trend screens, English and French.
+The app is now available in German.
 
 ---
 
@@ -119,15 +119,15 @@ POUR COMMENCER
 
 Pas encore de station ? Activez le Mode démo dans les réglages de l'app (Garmin Connect) pour l'essayer avec des données d'exemple.
 
-Langues de l'app : français et anglais.
+Langues de l'app : français, anglais et allemand.
 
 Station météo Netatmo · Netatmo weather station · CO2 · qualité de l'air · humidité · bruit · baromètre
 
 Application indépendante, non affiliée à Netatmo. Netatmo est une marque de son propriétaire.
 
-### Nouveautés (version 1.0.0)
+### Nouveautés (version 1.0.1)
 
-Première version : aperçu avec les mesures intérieures et extérieures, quatre écrans de tendances sur 24 h, anglais et français.
+L'app est maintenant disponible en allemand.
 
 ---
 
@@ -169,15 +169,15 @@ SO GEHT'S
 
 Noch keine Station? Aktivieren Sie den Demo-Modus in den App-Einstellungen (Garmin Connect), um die App mit Beispieldaten auszuprobieren.
 
-App-Sprachen: Englisch und Französisch (die Oberfläche erscheint auf deutschen Uhren auf Englisch).
+App-Sprachen: Deutsch, Englisch und Französisch.
 
 Netatmo Wetterstation · Netatmo weather station · CO2 · Luftqualität · Luftfeuchtigkeit · Lärm · Barometer
 
 Unabhängige App, nicht mit Netatmo verbunden oder von Netatmo unterstützt. Netatmo ist eine Marke des jeweiligen Inhabers.
 
-### Neuigkeiten (Version 1.0.0)
+### Neuigkeiten (Version 1.0.1)
 
-Erste Version: Glance mit Innen- und Außenwerten, vier 24-Stunden-Trendansichten, Englisch und Französisch.
+Die App ist jetzt auch auf Deutsch verfügbar.
 
 ---
 

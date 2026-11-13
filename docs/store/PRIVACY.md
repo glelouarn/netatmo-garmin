@@ -1,7 +1,8 @@
 # Privacy policy: Trends for Netatmo
 
 *Last updated: 11 November 2026*  
-[Version française ci-dessous](#politique-de-confidentialité--trends-for-netatmo)
+[Version française ci-dessous](#politique-de-confidentialité--trends-for-netatmo) ·
+[Deutsche Fassung unten](#datenschutzerklärung-trends-for-netatmo)
 
 **Trends for Netatmo** is a Garmin Connect IQ widget that displays the measurements of your
 Netatmo weather station on your watch.
@@ -66,3 +67,39 @@ réglages de votre compte Netatmo.
 ## Contact
 
 Questions : renardos.app@gmail.com, ou une issue sur https://github.com/glelouarn/netatmo-garmin/issues
+
+---
+
+# Datenschutzerklärung: Trends for Netatmo
+
+*Stand: 13. November 2026*
+
+**Trends for Netatmo** ist ein Garmin Connect IQ Widget, das die Messwerte Ihrer
+Netatmo Wetterstation auf Ihrer Uhr anzeigt.
+
+## Worauf die App zugreift
+
+- Die Messwerte Ihrer Netatmo Wetterstation (Temperatur, Luftfeuchtigkeit, CO₂, Lärm,
+  Luftdruck), nur lesend, über die offizielle Netatmo API (Berechtigung `read_station`).
+- Die Zugriffs- und Aktualisierungstokens, die Netatmo bei Ihrer Anmeldung ausstellt.
+
+## Wohin Ihre Daten gehen
+
+- Die Uhr kommuniziert **direkt** mit `api.netatmo.com`, über die Garmin Connect App auf
+  Ihrem Smartphone. Es gibt **keinen vom Entwickler betriebenen Server** und keinen
+  Drittanbieterdienst.
+- Tokens und die neuesten Messwerte werden **ausschließlich auf Ihrer Uhr** im privaten
+  Speicher der App abgelegt. Sie werden gelöscht, wenn Sie die App deinstallieren.
+- Der Entwickler erhebt, speichert, teilt oder verkauft **keine** personenbezogenen Daten,
+  und die App enthält weder Nutzungsstatistiken noch Werbung.
+
+## Netatmo und Garmin
+
+Die Anmeldung erfolgt auf den Seiten von Netatmo; Ihr Netatmo-Passwort sieht die App nie.
+Für Ihre Nutzung der Dienste von Netatmo und Garmin gelten deren jeweilige
+Datenschutzerklärungen. Sie können den Zugriff der App jederzeit in den Einstellungen Ihres
+Netatmo-Kontos widerrufen.
+
+## Kontakt
+
+Fragen: renardos.app@gmail.com, oder ein Issue unter https://github.com/glelouarn/netatmo-garmin/issues

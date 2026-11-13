@@ -9,7 +9,7 @@
 Your **Netatmo** weather station on a Garmin watch: a glance you can read in one second, and
 four "24-hour trend" screens.
 The watch calls the official Netatmo API directly: **no server** to run.
-The app is in **English and French** (following the watch language) and supports **57 watches**.
+The app is in **English, French and German** (following the watch language) and supports **57 watches**.
 
 | Glance | 1 · Indoor | 2 · Outdoor | 3 · CO2 and noise | 4 · Pressure |
 |:---:|:---:|:---:|:---:|:---:|
@@ -241,7 +241,7 @@ App settings (Demo mode) only show up in Garmin Connect for apps installed from 
 
 2. First release on https://apps.garmin.com/developer: **Upload an app**, attach
    `bin/store/TrendsForNetatmo.iq`, then fill in the listing with the texts from
-   [`docs/store/fiche-store.md`](docs/store/fiche-store.md) (English and French, reviewer
+   [`docs/store/fiche-store.md`](docs/store/fiche-store.md) (English, French and German, reviewer
    notes), the logo [`docs/store/icone-store.png`](docs/store/icone-store.png), the hero images
    and the screenshots in [`docs/store/captures/`](docs/store/captures/).
 3. Privacy policy: [`docs/store/PRIVACY.md`](docs/store/PRIVACY.md).
@@ -299,8 +299,8 @@ error is retried once.
   right after display. When returning from a notification, which may reuse that memory, the
   screen is fully redrawn. 3 images are reused (current + neighbours) rather than freed and
   recreated, which could wipe their content.
-- **Languages**: strings in `resources/strings` (English, default) and `resources-fre/strings`
-  (French).
+- **Languages**: strings in `resources/strings` (English, default), `resources-fre/strings`
+  (French) and `resources-deu/strings` (German).
 
 ### Connect IQ app structure
 
@@ -332,6 +332,7 @@ error is retried once.
     ├── Secrets.example.mc       # credentials template (to copy)
     ├── resources/               # icon, strings (English), "Demo mode" setting
     ├── resources-fre/           # French strings
+    ├── resources-deu/           # German strings
     ├── resources-icon40 … 70/   # icon at each watch's size
     └── source/                  # Monkey C code
 ```
