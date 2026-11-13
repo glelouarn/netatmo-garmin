@@ -23,7 +23,7 @@ Mots-clés visés par la recherche Connect IQ : *Netatmo*, *weather station*, *s
 | Contact public | renardos.app@gmail.com |
 | Fichier | `garmin/bin/store/TrendsForNetatmo.iq` |
 | Icône Store | `docs/store/icone-store.png` (500 × 500) |
-| Image hero | `docs/store/hero-1440x720.png` (anglais, allemand), `docs/store/hero-1440x720-fr.png` (français), 1440 × 720 |
+| Image hero | `docs/store/hero-1440x720.png` (anglais), `docs/store/hero-1440x720-fr.png` (français), `docs/store/hero-1440x720-de.png` (allemand), 1440 × 720 |
 | Captures | `docs/store/captures/modeles/` (600 × 600, JPEG, avec le boîtier) : fēnix 8 (aperçu + 4 écrans, vraies données), Forerunner 970 et Venu 4 (4 écrans, mode démo) |
 
 Ordre conseillé des captures : fenix8-apercu, fenix8-ecran-1 … 4, fr970-ecran-1 … 4,
